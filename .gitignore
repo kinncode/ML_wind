@@ -1,4 +1,12 @@
+# 原始逐秒資料（14 GB，不進 git）
 BSMI wind raw data 2016.03~2017.12
 BSMI wind raw data 2018.01-2019.12
 BSMI wind raw data 2020.01-2021.05
+
 __pycache__
+*.tmp
+*.parquet.tmp
+
+# 可重新產生的大型中間檔與模型（用程式即可重建）
+ml_project/ablation/model_data.parquet
+ml_project/final_model/model_*.txt

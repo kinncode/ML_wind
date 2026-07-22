@@ -80,6 +80,7 @@ def read_toa5(path: Path) -> pd.DataFrame:
         na_values=["NAN", "NaN", "nan", "INF", "-INF", ""],
         engine="c",
         low_memory=False,
+        on_bad_lines="skip",     # 少數原始檔有欄數錯亂的損毀列（如 2019-05），直接跳過
     )
     df.columns = [c.strip().upper() for c in df.columns]
 
@@ -279,7 +280,9 @@ def main() -> int:
         try:
             raw = read_toa5(path)
             agg = aggregate(raw, freq=args.freq)
-            agg.to_parquet(dst, index=False, compression="snappy")
+            tmp = dst.with_suffix(".parquet.tmp")   # 原子寫入：先寫暫存再改名，避免中途被砍留下半截檔
+            agg.to_parquet(tmp, index=False, compression="snappy")
+            tmp.replace(dst)
         except Exception as exc:                       # noqa: BLE001
             print(f"[{i:2d}/{len(files)}] {month}  失敗：{exc}")
             qc_rows.append({"month": month, "status": f"error: {exc}"})

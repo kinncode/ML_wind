@@ -1,0 +1,9 @@
+﻿target,twin_r,ceiling_r2
+tgt_ti,0.9907,0.9907
+tgt_gustfac,0.9832,0.9832
+tgt_p99n,0.9882,0.9882
+tgt_p01n,0.98,0.98
+tgt_specslope,0.7409,0.7409
+tgt_intscale,0.9766,0.9766
+tgt_gust_raw,0.9996,0.9996
+tgt_p99_raw,0.9998,0.9998

@@ -361,7 +361,9 @@ def main() -> int:
         t0 = time.time()
         raw = read_toa5(path)
         res = process_month(raw)
-        res.to_parquet(dst, index=False, compression="snappy")
+        tmp = dst.with_suffix(".parquet.tmp")   # 原子寫入，避免平行批次被砍時留下半截檔
+        res.to_parquet(tmp, index=False, compression="snappy")
+        tmp.replace(dst)
         ok = res["WS_100E_int_scale_s"].notna()
         print(
             f"[{i:2d}/{len(items)}] {month}  {len(res):>5,} 區塊  可用 {ok.sum():>5,}"
