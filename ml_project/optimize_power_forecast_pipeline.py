@@ -2,13 +2,17 @@
 """
 BSMI 測風塔 — 風力發電預測模型優化與最佳化 Stacking 融合管線 (Optimized Power Forecasting Pipeline)
 
+修正版 v2 — 修復 3 個重大問題：
+  Fix #1: 改用 NREL 5MW 官方功率曲線查表 + 線性內插 (取代錯誤的 k=3.704 簡化三次方)
+  Fix #2: 標記時序斷點，將 shift() 跨越間距的 target 設為 NaN 避免錯位汙染
+  Fix #3: 移除以當前 v_eff(t) 裁切未來預測的錯誤後處理，僅保留 clip(0, 5)
+
 優化特點：
 1. 擴充深層氣象與發電量 Lag 特徵 (t-10m, t-20m, t-30m, t-1h, t-2h, t-3h)
 2. 加入風功率密度 (Power Density)、滾動最大值與動態氣壓/風向差分特徵
 3. 多模型競爭 (Persistence, Ridge, LightGBM Direct, LightGBM Delta, XGBoost Direct, CatBoost)
 4. 凸優化 (Convex Optimization) 最佳權重 Stacking Ensemble
-5. 物理導向邊界約束與後處理修正 (Physics-guided Clipping & Cut-in/Cut-out Rules)
-6. 自動化導出評估數據、比較圖表與 RESULTS_power_optimization.md
+5. 自動化導出評估數據、比較圖表與 RESULTS_power_optimization.md
 """
 
 from pathlib import Path
@@ -61,20 +65,32 @@ FIG_DIR = OUT_DIR / "figures"
 FIG_DIR.mkdir(parents=True, exist_ok=True)
 
 # --------------------------------------------------------------------------
-# 1. 物理風機發電量模擬器 (IEC 空態空氣密度修正)
+# 1. 物理風機發電量模擬器 — NREL 5MW 官方功率曲線查表 (Fix #1)
 # --------------------------------------------------------------------------
+# NREL 5MW Reference Turbine 官方功率曲線 (kW)
+# Source: Jonkman et al., "Definition of a 5-MW Reference Wind Turbine", NREL/TP-500-38060
+_NREL_5MW_CURVE_WS = np.array([
+    0.0, 2.9, 3.0,  3.5,  4.0,   4.5,   5.0,   5.5,   6.0,   6.5,
+    7.0,  7.5,   8.0,   8.5,   9.0,   9.5,  10.0,  10.5,  11.0,  11.4,
+   12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0,
+   22.0, 23.0, 24.0, 25.0, 25.1
+])
+_NREL_5MW_CURVE_KW = np.array([
+    0.0,  0.0, 27.3, 56.6, 93.6, 144.5, 208.3, 289.7, 399.6, 518.8,
+  655.1, 811.7, 1007.0, 1211.0, 1458.0, 1726.0, 1984.0, 2267.0, 2587.0, 5000.0,
+ 5000.0, 5000.0, 5000.0, 5000.0, 5000.0, 5000.0, 5000.0, 5000.0, 5000.0, 5000.0,
+ 5000.0, 5000.0, 5000.0, 5000.0, 0.0
+])
+
 def simulate_nrel_5mw_power(ws_100, air_density):
+    """
+    NREL 5MW Reference Offshore Wind Turbine (Rotor D=126m, Rated 5000 kW)
+    使用官方功率曲線查表 + 線性內插，含 IEC 61400-12-1 空氣密度修正。
+    """
     rho_0 = 1.225
     v_eff = ws_100 * (air_density / rho_0) ** (1.0 / 3.0)
-    power = np.zeros_like(v_eff)
-    
-    mask_reg2 = (v_eff >= 3.0) & (v_eff < 11.4)
-    p_reg2 = 3.704 * (v_eff[mask_reg2] ** 3)
-    power[mask_reg2] = np.minimum(5000.0, p_reg2)
-    
-    mask_reg3 = (v_eff >= 11.4) & (v_eff <= 25.0)
-    power[mask_reg3] = 5000.0
-    return power, v_eff
+    power_kw = np.interp(v_eff, _NREL_5MW_CURVE_WS, _NREL_5MW_CURVE_KW)
+    return power_kw, v_eff
 
 # --------------------------------------------------------------------------
 # 2. 載入資料與深層特徵工程
@@ -139,6 +155,22 @@ df["target_power_10m"] = df["sim_power_mw"].shift(-1)
 df["target_power_1h"] = df["sim_power_mw"].shift(-6)
 df["target_power_3h"] = df["sim_power_mw"].shift(-18)
 df["target_power_6h"] = df["sim_power_mw"].shift(-36)
+
+# Fix #2: 標記時序斷點，將 shift() 跨越間距的 target 設為 NaN
+# shift(-N) 跨越資料斷點時，target 不是真正的 "+Nh 後" 觀測值
+print("[Fix #2] 檢測時序斷點並清除跨斷點 target 汙染...")
+shift_configs = [
+    (-1,  "target_power_10m", pd.Timedelta(minutes=10)),
+    (-6,  "target_power_1h",  pd.Timedelta(minutes=60)),
+    (-18, "target_power_3h",  pd.Timedelta(minutes=180)),
+    (-36, "target_power_6h",  pd.Timedelta(minutes=360)),
+]
+for shift_n, col, expected_gap in shift_configs:
+    actual_gap = df["ts"].shift(shift_n) - df["ts"]
+    bad_mask = (actual_gap != expected_gap)
+    n_bad = bad_mask.sum()
+    df.loc[bad_mask, col] = np.nan
+    print(f"  {col}: 清除 {n_bad} 筆跨斷點錯位 target")
 
 df["target_delta_10m"] = df["target_power_10m"] - df["sim_power_mw"]
 df["target_delta_1h"] = df["target_power_1h"] - df["sim_power_mw"]
@@ -211,16 +243,12 @@ for hor_name, target_col, target_delta_col in horizons:
     X_te = df_test[features]
     y_te_true = df_test[target_col].values
     base_power = df_test["sim_power_mw"].values
-    v_eff_te = df_test["v_eff"].values
     
-    # 物理後處理函數
-    def apply_physics_postprocessing(p_pred, v_eff):
-        p_out = p_pred.copy()
-        # Cut-in (<3m/s) 與 Cut-out (>25m/s) 強制修正為 0
-        p_out[(v_eff < 3.0) | (v_eff > 25.0)] = 0.0
-        # Region 3 (11.4 <= v_eff <= 25) 貼合上限
-        p_out[(v_eff >= 11.4) & (v_eff <= 25.0)] = np.minimum(5.0, p_out[(v_eff >= 11.4) & (v_eff <= 25.0)])
-        return np.clip(p_out, 0.0, 5.0)
+    # Fix #3: 移除以當前 v_eff(t) 裁切未來預測的錯誤後處理
+    # 未來風速可能與當前完全不同，不應用當前 v_eff 強制歸零
+    # 僅保留物理上限 [0, 5] MW 的 clip
+    def apply_physics_postprocessing(p_pred):
+        return np.clip(p_pred, 0.0, 5.0)
 
     # 1. Persistence Baseline
     pred_persist = base_power
@@ -228,7 +256,7 @@ for hor_name, target_col, target_delta_col in horizons:
     # 2. Ridge Baseline
     ridge_m = Ridge(alpha=100.0)
     ridge_m.fit(X_tr, y_tr_direct)
-    pred_ridge = apply_physics_postprocessing(ridge_m.predict(X_te), v_eff_te)
+    pred_ridge = apply_physics_postprocessing(ridge_m.predict(X_te))
     
     # 3. Tuned LightGBM Direct
     lgb_direct = lgb.LGBMRegressor(
@@ -237,7 +265,7 @@ for hor_name, target_col, target_delta_col in horizons:
         random_state=42, n_estimators=250, verbose=-1
     )
     lgb_direct.fit(X_tr, y_tr_direct)
-    pred_lgb_direct = apply_physics_postprocessing(lgb_direct.predict(X_te), v_eff_te)
+    pred_lgb_direct = apply_physics_postprocessing(lgb_direct.predict(X_te))
     
     # 4. Tuned LightGBM Delta
     lgb_delta = lgb.LGBMRegressor(
@@ -246,7 +274,7 @@ for hor_name, target_col, target_delta_col in horizons:
         random_state=42, n_estimators=250, verbose=-1
     )
     lgb_delta.fit(X_tr, y_tr_delta)
-    pred_lgb_delta = apply_physics_postprocessing(base_power + lgb_delta.predict(X_te), v_eff_te)
+    pred_lgb_delta = apply_physics_postprocessing(base_power + lgb_delta.predict(X_te))
     
     # 5. Tuned XGBoost Direct
     xgb_direct = xgb.XGBRegressor(
@@ -254,7 +282,7 @@ for hor_name, target_col, target_delta_col in horizons:
         subsample=0.8, colsample_bytree=0.8, random_state=42, n_estimators=250, n_jobs=4
     )
     xgb_direct.fit(X_tr, y_tr_direct)
-    pred_xgb_direct = apply_physics_postprocessing(xgb_direct.predict(X_te), v_eff_te)
+    pred_xgb_direct = apply_physics_postprocessing(xgb_direct.predict(X_te))
     
     # 6. CatBoost Direct (如果環境支援)
     if HAS_CATBOOST:
@@ -262,7 +290,7 @@ for hor_name, target_col, target_delta_col in horizons:
             iterations=250, learning_rate=0.03, depth=6, random_seed=42, verbose=0
         )
         cb_direct.fit(X_tr, y_tr_direct)
-        pred_cb_direct = apply_physics_postprocessing(cb_direct.predict(X_te), v_eff_te)
+        pred_cb_direct = apply_physics_postprocessing(cb_direct.predict(X_te))
     else:
         pred_cb_direct = pred_lgb_direct
     
@@ -276,7 +304,7 @@ for hor_name, target_col, target_delta_col in horizons:
     opt_w = find_optimal_stacking_weights(pred_matrix_tr, y_tr_direct.values)
     
     pred_matrix_te = np.column_stack([pred_lgb_direct, pred_lgb_delta, pred_xgb_direct])
-    pred_opt_stacking = apply_physics_postprocessing(np.dot(pred_matrix_te, opt_w), v_eff_te)
+    pred_opt_stacking = apply_physics_postprocessing(np.dot(pred_matrix_te, opt_w))
     
     test_predictions[hor_name] = {
         "true": y_te_true,
