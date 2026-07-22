@@ -1,0 +1,2 @@
+﻿month,status,raw_rows,bins,bins_expected,bins_valid,valid_pct,ws100_mean,ws100_max_gust,shear_alpha_median,flag_frozen,flag_pair_mismatch,flag_low_coverage,seconds
+2018-04,ok,2592000,4320,4320,4296,99.44,6.07,30.95,0.0624,0,24,0,27.7
