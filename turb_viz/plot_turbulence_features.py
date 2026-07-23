@@ -1,6 +1,6 @@
 """
 BSMI 測風塔 — 紊流特徵探索圖組
-================================
+============================
 產出兩張多面板圖：
   results/figures/turb_physics.png  — 紊流物理特徵
   results/figures/turb_spectral.png — 頻譜結構與品管
