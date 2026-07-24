@@ -55,20 +55,30 @@ def density_correct(u: np.ndarray, rho: np.ndarray) -> np.ndarray:
     return np.asarray(u) * (np.asarray(rho) / RHO_REF) ** (1.0 / 3.0)
 
 
-def hub_extrapolate(u100: np.ndarray, alpha: np.ndarray, hub: float = 100.0) -> np.ndarray:
-    """用冪次律風切把 100 m 風速外推到輪轂高度 hub（m）。hub=100 時不變。"""
-    return np.asarray(u100) * (hub / 100.0) ** np.asarray(alpha)
+def hub_extrapolate(u100: np.ndarray, alpha: np.ndarray, hub: float = 100.0,
+                    fallback_alpha: float = 0.14) -> np.ndarray:
+    """用冪次律風切把 100 m 風速外推到輪轂高度 hub（m）。
+    
+    若 alpha 為 NaN 或超出物理合理範圍 (-0.2 ~ 0.8)，自動啟動 fallback_alpha (預設 0.14)。
+    """
+    u100 = np.asarray(u100, dtype="float64")
+    if hub == 100.0:
+        return u100
+    alpha_clean = np.asarray(alpha, dtype="float64").copy()
+    invalid = np.isnan(alpha_clean) | (alpha_clean < -0.2) | (alpha_clean > 0.8)
+    alpha_clean[invalid] = fallback_alpha
+    return u100 * (hub / 100.0) ** alpha_clean
 
 
 def virtual_power(df: pd.DataFrame, rated_u: float | None = None,
-                  hub: float = 100.0) -> np.ndarray:
+                  hub: float = 100.0, fallback_alpha: float = 0.14) -> np.ndarray:
     """從 10 分鐘平均表算正規化虛擬出力。
 
     需要欄位：WS_100_mean, air_density；hub!=100 時另需 shear_alpha。
     """
     u = df["WS_100_mean"].to_numpy(dtype="float64")
     if hub != 100.0 and "shear_alpha" in df:
-        u = hub_extrapolate(u, df["shear_alpha"].to_numpy(), hub)
+        u = hub_extrapolate(u, df["shear_alpha"].to_numpy(), hub, fallback_alpha=fallback_alpha)
     u_eff = density_correct(u, df["air_density"].to_numpy())
     return power_curve(u_eff, rated_u=rated_u)
 

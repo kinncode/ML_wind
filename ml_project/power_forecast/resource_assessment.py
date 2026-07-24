@@ -29,7 +29,7 @@ FIG = HERE / "figures"; FIG.mkdir(exist_ok=True)
 RES = HERE / "results"; RES.mkdir(exist_ok=True)
 
 plt.rcParams.update({
-    "font.sans-serif": ["Noto Sans CJK JP", "Droid Sans Fallback", "DejaVu Sans"],
+    "font.sans-serif": ["Microsoft JhengHei", "SimHei", "Noto Sans CJK JP", "Droid Sans Fallback", "DejaVu Sans"],
     "axes.unicode_minus": False, "figure.dpi": 150, "savefig.dpi": 150,
     "savefig.bbox": "tight", "axes.grid": True, "grid.alpha": .25,
     "axes.spines.top": False, "axes.spines.right": False, "font.size": 11})
