@@ -1,26 +1,26 @@
 {
   "15min (即時結算區間)": {
-    "r2_ml": 1.0,
-    "r2_persist": 1.0,
-    "nrmse_ml": 0.0038,
-    "nrmse_persist": 0.0
+    "r2_ml": 0.9725,
+    "r2_persist": 0.9685,
+    "nrmse_ml": 0.1543,
+    "nrmse_persist": 0.165
   },
   "1-hour (電能交易區間)": {
-    "r2_ml": 0.9835,
-    "r2_persist": 0.9788,
-    "nrmse_ml": 0.1181,
-    "nrmse_persist": 0.134
+    "r2_ml": 0.9574,
+    "r2_persist": 0.9482,
+    "nrmse_ml": 0.1901,
+    "nrmse_persist": 0.2097
   },
   "3-hour (調度預警區間)": {
-    "r2_ml": 0.9366,
-    "r2_persist": 0.9123,
-    "nrmse_ml": 0.2276,
-    "nrmse_persist": 0.2677
+    "r2_ml": 0.9161,
+    "r2_persist": 0.8833,
+    "nrmse_ml": 0.2624,
+    "nrmse_persist": 0.3095
   },
   "taipower_15min_financial": {
-    "penalty_persistence_nt": 0.0,
-    "penalty_ml_nt": 1489.0,
-    "saved_nt": -1489.0,
-    "monthly_saved_nt": -88.0
+    "penalty_persistence_nt": 20829910.0,
+    "penalty_ml_nt": 19197063.0,
+    "saved_nt": 1632847.0,
+    "n_test_intervals": 45599
   }
 }

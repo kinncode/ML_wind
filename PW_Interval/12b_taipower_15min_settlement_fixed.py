@@ -37,6 +37,10 @@ plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.
 
 def rmse(a, b): return float(np.sqrt(np.mean((a - b)**2)))
 
+import sys
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+
 def main():
     print("="*70)
     print("PW_Interval Stage 12b —— 台電 15 分鐘區間能量預測（無洩漏修正版）")
@@ -130,8 +134,8 @@ def main():
         nrmse_lgb = rmse(te_y, pred_lgb) / np.mean(te_y)
         nrmse_per = rmse(te_y, persist_te) / np.mean(te_y)
 
-        print(f"  [{label}]  ML R² = {r2_lgb:.4f} (Persist R² = {r2_per:.4f})"
-              f"  ｜  ML nRMSE = {nrmse_lgb:.4f} vs Persist {nrmse_per:.4f}")
+        print(f"  [{label}]  ML R2 = {r2_lgb:.4f} (Persist R2 = {r2_per:.4f})"
+              f"  |  ML nRMSE = {nrmse_lgb:.4f} vs Persist {nrmse_per:.4f}")
 
         summary_15min[label] = {
             "r2_ml": round(r2_lgb, 4),
@@ -178,6 +182,10 @@ def main():
 
     res_path = os.path.join(C.RES_DIR, "taipower_15min_metrics_fixed.json")
     with open(res_path, "w", encoding="utf-8") as f:
+        json.dump(summary_15min, f, ensure_ascii=False, indent=2)
+
+    res_path_orig = os.path.join(C.RES_DIR, "taipower_15min_metrics.json")
+    with open(res_path_orig, "w", encoding="utf-8") as f:
         json.dump(summary_15min, f, ensure_ascii=False, indent=2)
 
     # 4. 繪製圖表

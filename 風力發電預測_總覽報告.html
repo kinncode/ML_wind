@@ -486,7 +486,7 @@ window.MathJax = {
     <div class="box"><div class="n g">0.7209</div><div class="l">日前 24h 能量 \(R^2\)（PW_Interval，+28.2%）</div></div>
     <div class="box"><div class="n g">5,545 萬</div><div class="l">100 MW 風場省下懲罰金/期（PW_Integrated，避險 27.9%）</div></div>
     <div class="box"><div class="n g">0.8706</div><div class="l">+1h 劇烈爬升事件 ROC-AUC</div></div>
-    <div class="box"><div class="n">0.9999</div><div class="l">台電 15-min 即時轉供 \(R^2\)</div></div>
+    <div class="box"><div class="n">0.9725</div><div class="l">台電 15-min 即時轉供 \(R^2\)</div></div>
   </div>
   <div class="grid2">
     <figure><img src="PW_Interval/figures/fig14_day_ahead_24h_settlement.png" alt="日前24h結算"><figcaption>日前 24h 區間總能量預測與財務避險（PW_Interval/fig14）</figcaption></figure>
@@ -509,9 +509,9 @@ window.MathJax = {
   <table>
     <thead><tr><th>PW_Interval 標的</th><th>15min 區間數</th><th>最佳模型</th><th>nRMSE</th><th>\(R^2\)</th><th>相對 Persist.</th></tr></thead>
     <tbody>
-      <tr><td>15min 即時轉供</td><td>1</td><td>LightGBM</td><td>0.0038</td><td class="best">0.9999</td><td>近乎零誤差</td></tr>
-      <tr><td>1h 電能交易</td><td>4</td><td>LightGBM</td><td>0.1181</td><td>0.9835</td><td>+11.9%</td></tr>
-      <tr><td>3h 調度預警</td><td>12</td><td>LightGBM</td><td>0.2276</td><td>0.9366</td><td>+15.0%</td></tr>
+      <tr><td>15min 即時轉供</td><td>1</td><td>LightGBM</td><td>0.1543</td><td class="best">0.9725</td><td>+6.5%</td></tr>
+      <tr><td>1h 電能交易</td><td>4</td><td>LightGBM</td><td>0.1901</td><td>0.9574</td><td>+9.3%</td></tr>
+      <tr><td>3h 調度預警</td><td>12</td><td>LightGBM</td><td>0.2624</td><td>0.9161</td><td>+15.2%</td></tr>
       <tr><td>6h 超短期</td><td>24</td><td>LightGBM</td><td>0.2579</td><td>0.8741</td><td>+27.9%</td></tr>
       <tr><td>日前 24h 總能量</td><td>96</td><td>LightGBM</td><td>0.4163</td><td>0.7209</td><td>+28.2%</td></tr>
     </tbody>
