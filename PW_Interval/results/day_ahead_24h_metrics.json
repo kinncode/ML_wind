@@ -1,0 +1,13 @@
+{
+  "horizon_label": "24-hour (日前 24 小時區間能量)",
+  "r2_ml": 0.7209,
+  "r2_persist": 0.4587,
+  "nrmse_ml": 0.4163,
+  "nrmse_persist": 0.5798,
+  "financial_model": {
+    "penalty_persistence_nt": 29041352351.0,
+    "penalty_ml_nt": 17446779247.0,
+    "saved_nt": 11594573104.0,
+    "monthly_saved_nt": 682033712.0
+  }
+}

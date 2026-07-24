@@ -1,0 +1,5 @@
+tag,target,H,model,RMSE,MAE,nRMSE,skill_vs_persist,is_best
+ws100_H1,ws100,1,persistence,1.43814,1.06451,0.14845,0.0,False
+ws100_H1,ws100,1,climatology,4.63531,3.57767,0.47849,-2.22313,False
+ws100_H1,ws100,1,ridge,1.36441,1.01482,0.14084,0.05127,False
+ws100_H1,ws100,1,lightgbm,1.31833,0.97677,0.13609,0.08331,True

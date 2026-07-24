@@ -1,0 +1,19 @@
+dimension,H,setup,nRMSE,delta_pct
+1. 高度配置,1,Full (四高度 + 風切 alpha),0.24811,0.0
+1. 高度配置,1,Single Height (僅 100m 風速),0.24861,0.2
+1. 高度配置,3,Full (四高度 + 風切 alpha),0.36107,0.0
+1. 高度配置,3,Single Height (僅 100m 風速),0.3618,0.2
+1. 高度配置,6,Full (四高度 + 風切 alpha),0.4494,0.0
+1. 高度配置,6,Single Height (僅 100m 風速),0.45113,0.38
+2. 視窗長度,1,Full Lookback (1h + 3h + 6h),0.24811,0.0
+2. 視窗長度,1,Short Lookback (僅 <=1h 視窗),0.24969,0.63
+2. 視窗長度,3,Full Lookback (1h + 3h + 6h),0.36107,0.0
+2. 視窗長度,3,Short Lookback (僅 <=1h 視窗),0.36308,0.56
+2. 視窗長度,6,Full Lookback (1h + 3h + 6h),0.4494,0.0
+2. 視窗長度,6,Short Lookback (僅 <=1h 視窗),0.45118,0.4
+3. 訓練歷史長度,1,Full 3-Year Train (2016-2018),0.24811,0.0
+3. 訓練歷史長度,1,1-Year Train Only (僅 2018),0.2637,6.28
+3. 訓練歷史長度,3,Full 3-Year Train (2016-2018),0.36107,0.0
+3. 訓練歷史長度,3,1-Year Train Only (僅 2018),0.38457,6.51
+3. 訓練歷史長度,6,Full 3-Year Train (2016-2018),0.4494,0.0
+3. 訓練歷史長度,6,1-Year Train Only (僅 2018),0.47619,5.96

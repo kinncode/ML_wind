@@ -28,10 +28,11 @@ print("=" * 70)
 
 df_full, df_train_all, df_test = load_data()
 
-# 區間預測特殊拆分: Train 2016-2017, Cal 2018
-df_train = df_train_all[df_train_all["year"] <= 2017].copy()
-df_calib = df_train_all[df_train_all["year"] == 2018].copy()
-print(f"[INTERVAL] Train(2016-2017): {len(df_train)}, Cal(2018): {len(df_calib)}, Test(2020-2021): {len(df_test)}")
+# 全資料區間預測拆分: Train 85% (2016 ~ 2019), Calib 15% (2019 ~ 2020.05)
+n_tr = int(len(df_train_all) * 0.85)
+df_train = df_train_all.iloc[:n_tr].copy()
+df_calib = df_train_all.iloc[n_tr:].copy()
+print(f"[INTERVAL] Train(85% 全歷史): {len(df_train)}, Cal(15% 校準): {len(df_calib)}, Test(2020.06-2021.10): {len(df_test)}")
 
 # ==========================================================================
 # 2. 訓練 & Conformal Prediction

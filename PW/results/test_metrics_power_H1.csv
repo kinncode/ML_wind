@@ -1,0 +1,5 @@
+tag,target,H,model,RMSE,MAE,nRMSE,skill_vs_persist,is_best
+power_H1,power,1,persistence,0.14753,0.07954,0.28409,0.0,False
+power_H1,power,1,climatology,0.34028,0.29468,0.65525,-1.30648,False
+power_H1,power,1,ridge,0.13936,0.0876,0.26836,0.05537,False
+power_H1,power,1,lightgbm,0.12894,0.07779,0.24828,0.12604,True

@@ -1,0 +1,11 @@
+總筆數 295,997｜測試年起 2020-06-01
+
+=== ws100_H1 ===  train 175,031 / test 57,438  feats 44
+   CV ridge     nRMSE mean=0.1503
+   CV lightgbm  nRMSE mean=0.1498
+/sessions/kind-nice-cori/.local/lib/python3.10/site-packages/lightgbm/sklearn.py:1106: LGBMDeprecationWarning: The argument 'eval_set' is deprecated, use 'eval_X' and 'eval_y' instead.
+  eval_set = _validate_eval_set_Xy(eval_set=eval_set, eval_X=eval_X, eval_y=eval_y)
+   TEST nRMSE: persistence=0.1485  climatology=0.4785  ridge=0.1408  lightgbm=0.1360   → best=lightgbm
+
+=== ws100_H3 ===  train 174,051 / test 57,124  feats 44
+   CV ridge     nRMSE mean=0.2443

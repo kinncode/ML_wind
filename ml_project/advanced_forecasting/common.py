@@ -7,6 +7,8 @@
 from pathlib import Path
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 import glob
@@ -14,7 +16,7 @@ import glob
 # --------------------------------------------------------------------------
 # 路徑設定
 # --------------------------------------------------------------------------
-PROJECT_DIR = Path("d:/wind_d/ML_wind/ml_project")
+PROJECT_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_DIR / "data"
 ADV_DIR = PROJECT_DIR / "advanced_forecasting"
 ADV_RESULTS = ADV_DIR / "results"
@@ -105,12 +107,12 @@ FEATURES = [
 
 
 # --------------------------------------------------------------------------
-# 資料載入與特徵工程 (年分拆分)
+# 資料載入與特徵工程 (全資料拆分: 訓練 2016-2020.05, 測試 2020.06-2021.10)
 # --------------------------------------------------------------------------
 def load_data():
     """
     載入 BSMI 測風塔資料，建構特徵工程與預測標的。
-    年分拆分: Train 2016-2018, Test 2020-2021
+    全資料拆分: 訓練 2016-2020-05 (全資料集), 測試 2020-06 ~ 2021-10
     回傳: df_full, df_train, df_test
     """
     print("[DATA] 載入 BSMI 10min + turbulence 資料...")
@@ -185,12 +187,13 @@ def load_data():
     feature_na = df[FEATURES].isna().any(axis=1)
     df = df[~feature_na].reset_index(drop=True)
 
-    # 依年分拆分
-    df_train = df[df["year"] <= 2018].copy()
-    df_test  = df[df["year"] >= 2020].copy()
+    # 依完整時間線拆分 (對齊 power_forecast_interval_ge)
+    test_start = pd.Timestamp("2020-06-01")
+    df_train = df[df["ts"] < test_start].copy()
+    df_test  = df[df["ts"] >= test_start].copy()
 
     print(f"[DATA] 特徵有效筆數: {len(df)}")
-    print(f"[DATA] 訓練集 (2016-2018): {len(df_train)}")
-    print(f"[DATA] 測試集 (2020-2021): {len(df_test)}")
+    print(f"[DATA] 訓練集 (全資料 2016~2020.05): {len(df_train)}")
+    print(f"[DATA] 測試集 (2020.06~2021.10): {len(df_test)}")
 
     return df, df_train, df_test

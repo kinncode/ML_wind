@@ -1,0 +1,47 @@
+{
+  "energy_forecast": {
+    "1h": {
+      "r2_ml": 0.9714,
+      "r2_persist": 0.96,
+      "nrmse_ml": 0.1278,
+      "nrmse_persist": 0.1511
+    },
+    "3h": {
+      "r2_ml": 0.9254,
+      "r2_persist": 0.8805,
+      "nrmse_ml": 0.2039,
+      "nrmse_persist": 0.2581
+    },
+    "6h": {
+      "r2_ml": 0.8746,
+      "r2_persist": 0.7602,
+      "nrmse_ml": 0.2587,
+      "nrmse_persist": 0.3578
+    }
+  },
+  "ramp_classification": {
+    "1h": {
+      "ramp_events": 3183,
+      "auc": 0.8706,
+      "f1": 0.0294,
+      "precision": 0.5783,
+      "recall": 0.0151
+    },
+    "3h": {
+      "ramp_events": 8889,
+      "auc": 0.8629,
+      "f1": 0.4004,
+      "precision": 0.6657,
+      "recall": 0.2863
+    }
+  },
+  "financial_model": {
+    "wind_farm_capacity_mw": 100.0,
+    "total_revenue_nt": 2206922749.0,
+    "penalty_persistence_nt": 198487167.0,
+    "penalty_ml_nt": 143039373.0,
+    "net_saved_nt": 55447794.0,
+    "pct_saved": 27.9,
+    "monthly_saved_nt": 3261635.0
+  }
+}

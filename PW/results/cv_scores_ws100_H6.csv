@@ -1,0 +1,9 @@
+tag,target,H,model,fold,nRMSE
+ws100_H6,ws100,6,ridge,0,0.34865108
+ws100_H6,ws100,6,ridge,1,0.3410228
+ws100_H6,ws100,6,ridge,2,0.3042671
+ws100_H6,ws100,6,ridge,3,0.31214064
+ws100_H6,ws100,6,lightgbm,0,0.35314506
+ws100_H6,ws100,6,lightgbm,1,0.33085966
+ws100_H6,ws100,6,lightgbm,2,0.30077234
+ws100_H6,ws100,6,lightgbm,3,0.2961035

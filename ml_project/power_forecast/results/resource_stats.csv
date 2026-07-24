@@ -1,0 +1,10 @@
+﻿metric,value
+n_samples,278342
+period,2016-03 ~ 2021-10
+capacity_factor_pct,45.08
+full_load_hours,3949
+frac_below_cutin_pct,14.78
+frac_at_rated_pct,23.72
+frac_cutout_pct,0.515
+best_month_cf,70.8
+worst_month_cf,20.7

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BSMI 風力發電預測 — 七專案總覽</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<style>
+  :root{
+    --bg:#f7f8fa; --ink:#1a2330; --muted:#5a6a7d; --line:#dde3ea;
+    --card:#ffffff; --accent:#1e5fa8; --accent2:#0d8f6f; --warn:#b5462a;
+    --fam1:#1e5fa8; --fam2:#8b3fb0; --shadow:0 1px 3px rgba(20,40,70,.08),0 6px 20px rgba(20,40,70,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Microsoft JhengHei","PingFang TC","Noto Sans CJK TC","Segoe UI",system-ui,sans-serif;
+    line-height:1.75; font-size:16px; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{display:grid; grid-template-columns:250px 1fr; max-width:1400px; margin:0 auto;}
+  /* sidebar nav */
+  nav{
+    position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto;
+    padding:22px 16px 60px; border-right:1px solid var(--line); background:#fff;
+  }
+  nav h1{font-size:15px; margin:0 0 4px; letter-spacing:.3px}
+  nav .sub{font-size:12px; color:var(--muted); margin-bottom:18px}
+  nav a{display:block; color:var(--muted); text-decoration:none; font-size:13.5px; padding:4px 8px; border-radius:6px; border-left:2px solid transparent}
+  nav a:hover{background:#eef4fb; color:var(--accent)}
+  nav a.lv2{padding-left:20px; font-size:12.5px}
+  nav .grp{margin-top:14px; font-size:11px; font-weight:700; color:#9aa7b5; text-transform:uppercase; letter-spacing:.6px; padding:0 8px}
+  main{padding:40px 52px 120px; min-width:0}
+  header.hero{
+    background:linear-gradient(135deg,#123a63,#1e5fa8 55%,#0d8f6f);
+    color:#fff; border-radius:16px; padding:38px 40px; margin-bottom:34px; box-shadow:var(--shadow);
+  }
+  header.hero h1{margin:0 0 6px; font-size:30px; letter-spacing:.5px}
+  header.hero p{margin:6px 0 0; opacity:.94; font-size:15px}
+  header.hero .tags{margin-top:18px; display:flex; gap:8px; flex-wrap:wrap}
+  header.hero .tags span{background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.28); padding:4px 12px; border-radius:20px; font-size:12.5px}
+  section{margin:0 0 46px; scroll-margin-top:18px}
+  h2{font-size:23px; margin:8px 0 4px; padding-bottom:10px; border-bottom:3px solid var(--accent); display:inline-block}
+  h3{font-size:18px; margin:28px 0 8px; color:#12263f}
+  h4{font-size:15px; margin:18px 0 6px; color:#2c4260}
+  p{margin:8px 0}
+  .lead{font-size:16.5px; color:#33455c}
+  .stepno{display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:50%; background:var(--accent); color:#fff; font-weight:700; font-size:15px; margin-right:10px; vertical-align:middle}
+  code{background:#eef1f5; padding:1.5px 6px; border-radius:5px; font-family:"Cascadia Code",Consolas,monospace; font-size:13.5px; color:#b5462a}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px 24px; margin:16px 0; box-shadow:var(--shadow)}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+  @media(max-width:1000px){.grid2,.grid3{grid-template-columns:1fr}}
+  table{border-collapse:collapse; width:100%; margin:14px 0; font-size:13.8px; background:#fff; border-radius:10px; overflow:hidden; box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line); padding:8px 11px; text-align:center}
+  th{background:#12324f; color:#fff; font-weight:600; font-size:13px}
+  tbody tr:nth-child(even){background:#f4f7fb}
+  td.l,th.l{text-align:left}
+  .best{color:#0d8f6f; font-weight:700}
+  .tblwrap{overflow-x:auto}
+  .kpi{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:16px 0}
+  @media(max-width:900px){.kpi{grid-template-columns:repeat(2,1fr)}}
+  .kpi .box{background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; text-align:center; box-shadow:var(--shadow)}
+  .kpi .box .n{font-size:26px; font-weight:800; color:var(--accent)}
+  .kpi .box .n.g{color:var(--accent2)}
+  .kpi .box .l{font-size:12.5px; color:var(--muted); margin-top:3px}
+  figure{margin:16px 0; background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px; box-shadow:var(--shadow)}
+  figure img{width:100%; height:auto; border-radius:6px; display:block}
+  figcaption{font-size:12.8px; color:var(--muted); margin-top:8px; text-align:center}
+  .formula{background:#fbfcfe; border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:8px; padding:6px 18px; margin:12px 0; overflow-x:auto}
+  .note{background:#fff8f2; border-left:4px solid var(--warn); border-radius:8px; padding:12px 18px; margin:14px 0; font-size:14px}
+  .good{background:#f1fbf7; border-left:4px solid var(--accent2); border-radius:8px; padding:12px 18px; margin:14px 0; font-size:14px}
+  .badge{display:inline-block; font-size:11.5px; font-weight:700; padding:2px 9px; border-radius:20px; color:#fff; vertical-align:middle}
+  .b-fam1{background:var(--fam1)} .b-fam2{background:var(--fam2)}
+  ul.tight{margin:6px 0; padding-left:22px} ul.tight li{margin:4px 0}
+  .pill{display:inline-block; background:#eef4fb; color:var(--accent); border:1px solid #cfe0f2; border-radius:20px; padding:2px 10px; font-size:12px; margin:2px}
+  .flow{display:flex; align-items:stretch; gap:0; flex-wrap:wrap; margin:18px 0}
+  .flow .st{flex:1; min-width:120px; background:#fff; border:1px solid var(--line); border-top:4px solid var(--accent); border-radius:10px; padding:12px 10px; text-align:center; position:relative; box-shadow:var(--shadow)}
+  .flow .st .k{font-size:11px; color:#9aa7b5; font-weight:700}
+  .flow .st .t{font-size:14px; font-weight:700; margin:4px 0 2px; color:#12324f}
+  .flow .st .d{font-size:11.5px; color:var(--muted)}
+  .flow .arrow{display:flex; align-items:center; color:var(--accent); font-size:22px; padding:0 4px}
+  @media(max-width:900px){.flow{flex-direction:column}.flow .arrow{transform:rotate(90deg)}}
+  footer{border-top:1px solid var(--line); padding-top:20px; color:var(--muted); font-size:13px}
+  .anchor{scroll-margin-top:20px}
+  details{background:#fff; border:1px solid var(--line); border-radius:10px; padding:10px 16px; margin:10px 0}
+  summary{cursor:pointer; font-weight:600; color:#12324f}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <h1>風力發電預測總覽</h1>
+  <div class="sub">BSMI 測風塔 · 七專案 · 2016–2021</div>
+  <a href="#overview">0 · 總覽與專案地圖</a>
+  <a href="#framework">整理框架（六階段）</a>
+  <div class="grp">六階段管線</div>
+  <a href="#s1" class="lv2">① 原始資料與品質控制</a>
+  <a href="#s2" class="lv2">② 虛擬出力建模（物理層）</a>
+  <a href="#s3" class="lv2">③ 特徵工程</a>
+  <a href="#s4" class="lv2">④ 預測方法</a>
+  <a href="#s5" class="lv2">⑤ 建模架構與驗證</a>
+  <a href="#s6" class="lv2">⑥ 結果與應用價值</a>
+  <div class="grp">各專案結果</div>
+  <a href="#p-pw" class="lv2">PW / PW_Integrated / PW_Interval</a>
+  <a href="#p-root" class="lv2">power_forecast（根）</a>
+  <a href="#p-ge" class="lv2">interval_ge（系統A）</a>
+  <a href="#p-cl" class="lv2">interval_cl（系統B）</a>
+  <a href="#p-adv" class="lv2">advanced_forecasting</a>
+  <a href="#p-turb" class="lv2">湍流降尺度（消融）</a>
+  <div class="grp">結尾</div>
+  <a href="#limits">誠實限制</a>
+  <a href="#summary">一頁總結</a>
+</nav>
+
+<main>
+<header class="hero">
+  <h1>BSMI 風力發電預測：七專案整合總覽</h1>
+  <p>只用一座 BSMI 100 m 測風塔（2016-03 ~ 2021-10，66 個月）＋ 物理功率曲線建立「虛擬風場」，做完整的資源評估、點預測、機率／區間預測與軌跡預測。</p>
+  <p style="font-size:13.5px;opacity:.9">整理框架：<b>原始資料 → 品質控制 → 虛擬出力（物理）→ 特徵工程 → 預測方法 → 建模架構與驗證 → 結果</b>。全部固定亂數種子、可完全重現。</p>
+  <div class="tags">
+    <span>278,600 筆有效 10 分鐘紀錄</span>
+    <span>容量因數 CF ≈ 45%</span>
+    <span>LightGBM 為主力模型</span>
+    <span>保留測試年 2020-06 ~ 2021-10</span>
+    <span>7 個獨立專案</span>
+  </div>
+</header>
+
+<!-- ============================ 0. OVERVIEW ============================ -->
+<section id="overview" class="anchor">
+  <h2>0 · 總覽與專案地圖</h2>
+  <p class="lead">七個專案共用同一座測風塔，但在 <b>QC 哲學</b>、<b>虛擬出力機型</b>、<b>出力單位</b>、以及「區間」的定義上分兩大家族。先把它們放在同一張地圖上。</p>
+
+  <h3>七專案分類表</h3>
+  <div class="tblwrap">
+  <table>
+    <thead><tr><th class="l">專案</th><th>來源檔</th><th>驗證 / QC 方式</th><th>虛擬出力 Y 的機型</th><th>出力單位</th><th>家族</th></tr></thead>
+    <tbody>
+      <tr><td class="l"><b>PW</b></td><td>BSMI_10min</td><td>自建 01 獨立 QC → <code>is_ok</code></td><td>~8 MW 曲線</td><td>正規化 0–1</td><td><span class="badge b-fam1">家族一</span></td></tr>
+      <tr><td class="l"><b>PW_Integrated</b></td><td>BSMI_10min</td><td>自建 01 獨立 QC → <code>is_ok</code></td><td>~8 MW 曲線</td><td>正規化 0–1</td><td><span class="badge b-fam1">家族一</span></td></tr>
+      <tr><td class="l"><b>PW_Interval</b></td><td>BSMI_10min</td><td>自建 01 獨立 QC → <code>is_ok</code></td><td>~8 MW 曲線</td><td>正規化 0–1</td><td><span class="badge b-fam1">家族一</span></td></tr>
+      <tr><td class="l"><b>power_forecast_interval_ge</b></td><td>BSMI_10min</td><td>自建 01 獨立 QC → <code>is_ok</code></td><td>~8 MW 曲線</td><td>正規化 0–1</td><td><span class="badge b-fam1">家族一</span></td></tr>
+      <tr><td class="l"><b>power_forecast（根）</b></td><td>BSMI_10min</td><td>直接信上游 <code>is_valid</code>（不重跑 QC）</td><td>~8 MW 曲線</td><td>正規化 0–1</td><td><span class="badge b-fam1">家族一</span></td></tr>
+      <tr><td class="l"><b>power_interval_forecast_cl</b></td><td>BSMI_10min</td><td>直接信 <code>is_valid</code>（import 根專案）</td><td>~8 MW 曲線</td><td>正規化 0–1</td><td><span class="badge b-fam1">家族一</span></td></tr>
+      <tr><td class="l"><b>advanced_forecasting</b></td><td>BSMI_10min ＋ BSMI_turb</td><td>直接信 <code>is_valid</code></td><td><b>NREL 5 MW 官方曲線</b></td><td><b>絕對 kW/MW</b></td><td><span class="badge b-fam2">家族二</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h4><span class="badge b-fam1">家族一</span> 虛擬 ~8 MW · 正規化 0–1</h4>
+      <p>把出力當成「容量因數的瞬時值」（0–1），結論對機型穩健。六個專案分別聚焦不同任務：純點預測、資源評估、機率區間、窗口能量、台電結算。</p>
+      <p><span class="pill">PW</span><span class="pill">PW_Integrated</span><span class="pill">PW_Interval</span><span class="pill">power_forecast</span><span class="pill">interval_ge</span><span class="pill">interval_cl</span></p>
+    </div>
+    <div class="card">
+      <h4><span class="badge b-fam2">家族二</span> NREL 5 MW · 絕對 kW/MW</h4>
+      <p><code>advanced_forecasting</code> 改用 NREL 5 MW 官方功率曲線輸出<b>絕對功率</b>（MW）與能量（MWh），並額外併入 <code>BSMI_turb</code> 湍流特徵，示範三種進階方法（Conformal / Quantile / Trajectory）。</p>
+      <p><span class="pill">advanced_forecasting</span></p>
+    </div>
+  </div>
+
+  <h3>關鍵概念：「區間」有兩個意思</h3>
+  <div class="note">
+    中文「區間預測」被用在兩個完全不同的問題上，這是一切混淆的根源：
+    <ul class="tight">
+      <li><b>時間的區間</b>（窗口 / 能量）：預測未來一段時間 \([t{+}1,\,t{+}H]\) 的<b>平均或總量</b>。回答「未來這段時間<u>總共</u>發多少電？」→ 對應 <code>PW_Interval</code>、<code>interval_ge</code>（系統 A）。</li>
+      <li><b>不確定性的區間</b>（機率）：對某個預測值給出<b>可信範圍</b> p10–p90。回答「這一刻<u>多不確定</u>？」→ 對應 <code>interval_cl</code>（系統 B）、<code>advanced_forecasting</code> 的 quantile / conformal。</li>
+    </ul>
+    兩者互補：<b>系統 A 管「一天大概發多少」，系統 B 管「每一刻有多少把握」。</b>
+  </div>
+</section>
+
+<!-- ============================ FRAMEWORK ============================ -->
+<section id="framework" class="anchor">
+  <h2>整理框架（六階段管線）</h2>
+  <p class="lead">您原本的框架是五段：<b>原始資料特徵 → 特徵處理 → 預測方法 → 建模架構 → 最後結果</b>。建議在前面補上兩個對風能特別關鍵、且是本系列專案「誠實界線」所在的階段——<b>品質控制</b>與<b>虛擬出力的物理建模</b>——形成更完整的六階段。</p>
+
+  <div class="flow">
+    <div class="st"><div class="k">STAGE 1</div><div class="t">原始資料 + QC</div><div class="d">1 Hz→10 min<br>四重品質控制</div></div>
+    <div class="arrow">→</div>
+    <div class="st"><div class="k">STAGE 2 ★新增</div><div class="t">虛擬出力（物理）</div><div class="d">功率曲線<br>空氣密度修正</div></div>
+    <div class="arrow">→</div>
+    <div class="st"><div class="k">STAGE 3</div><div class="t">特徵工程</div><div class="d">44 特徵<br>無洩漏遮罩</div></div>
+    <div class="arrow">→</div>
+    <div class="st"><div class="k">STAGE 4</div><div class="t">預測方法</div><div class="d">點/區間/機率/軌跡</div></div>
+    <div class="arrow">→</div>
+    <div class="st"><div class="k">STAGE 5</div><div class="t">建模與驗證</div><div class="d">時序切分<br>前推 CV</div></div>
+    <div class="arrow">→</div>
+    <div class="st"><div class="k">STAGE 6</div><div class="t">結果與應用</div><div class="d">技術得分<br>經濟價值</div></div>
+  </div>
+
+  <div class="good">
+    <b>為什麼要補這兩階段（給教授的重點）：</b>
+    <ul class="tight">
+      <li><b>② 虛擬出力是本系列的核心前提</b>——測風塔<u>沒有實測發電量</u>，Y 是用功率曲線 + 空氣密度修正從風速推得的。把它獨立成一階段，才能誠實交代「Y 從哪來、為何用正規化」，也是家族一 vs 家族二差異的所在。</li>
+      <li><b>① QC 是可信度的地基</b>——七專案的差異之一就是「自建獨立 QC」vs「直接信上游 <code>is_valid</code>」。把 QC 顯性化，審閱者才知道每個數字站在什麼樣的資料品質上。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================ STAGE 1 ============================ -->
+<section id="s1" class="anchor">
+  <h2><span class="stepno">1</span>原始資料與品質控制</h2>
+
+  <h3>1.1 資料來源</h3>
+  <div class="grid2">
+    <div class="card">
+      <h4>BSMI 100 m 離岸測風塔</h4>
+      <ul class="tight">
+        <li><b>期間</b>：2016-03 ~ 2021-10（66 個月，僅整月缺 2020-03、2021-06）</li>
+        <li><b>原始解析度</b>：1 Hz 逐秒</li>
+        <li><b>4 個高度風速</b>：100E / 100W / 69W / 38W m</li>
+        <li><b>2 個風向</b>：97 m / 35 m</li>
+        <li><b>氣象</b>：氣溫、相對濕度、氣壓 → 推空氣密度</li>
+        <li><b>塔本身沒有實測發電量</b>（見階段 2）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>兩張衍生資料表</h4>
+      <ul class="tight">
+        <li><code>BSMI_10min.parquet</code>：1 Hz 聚合成 10 分鐘平均表（含覆蓋率與統計量），約 285,189 列 × 48 欄。</li>
+        <li><code>BSMI_turb.parquet</code>：湍流目標表（10 分鐘 std/mean、陣風因子、頻譜量），約 285,189 列 × 35 欄。<b>僅 advanced_forecasting 與湍流降尺度專案使用。</b></li>
+        <li>切分：訓練 2016–2018／驗證 2019／測試 2020–2021（或以 <code>2020-06-01</code> 為保留測試起點）。</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>1.2 品質控制（四重 QC）</h3>
+  <p>家族一的專案<b>不盲信上游旗標，獨立重跑一輪 QC</b>；家族二則直接採信 <code>is_valid</code>。獨立 QC 內容：</p>
+  <ul class="tight">
+    <li><b>時間軸去重</b> + 建立連續 10 分鐘網格</li>
+    <li><b>物理範圍檢查</b>：風速 0–60 m/s、溫度 −10–50 °C、濕度 0–105%、氣壓 950–1050 hPa、空氣密度 1.0–1.4 kg/m³</li>
+    <li><b>感測器凍結偵測</b>：連續 ≥ 1 h 定值視為異常</li>
+    <li><b>四高度一致性</b>：100E/100W 配對差、風向向量長度檢查</li>
+  </ul>
+  <div class="kpi">
+    <div class="box"><div class="n">295,997</div><div class="l">10 分鐘網格點</div></div>
+    <div class="box"><div class="n">279,055</div><div class="l">有觀測</div></div>
+    <div class="box"><div class="n g">278,612</div><div class="l">通過 QC 有效（99.8%）</div></div>
+    <div class="box"><div class="n">211,564</div><div class="l">建模用（風速 ≥ 4 m/s）</div></div>
+  </div>
+  <div class="note"><b>QC 哲學差異（審閱重點）：</b>「自建獨立 QC」讓結果不依賴上游品質保證，是較嚴謹的作法；「直接信 <code>is_valid</code>」則假設上游 QC 可靠、換取管線簡潔。兩者有效筆數幾乎一致（~278,600），代表上游旗標其實可信——這本身就是一個值得報告的驗證結論。</div>
+</section>
+
+<!-- ============================ STAGE 2 ============================ -->
+<section id="s2" class="anchor">
+  <h2><span class="stepno">2</span>虛擬出力建模（物理層）</h2>
+  <p class="lead">因為塔沒有實測發電量，出力 Y 由「風速 × 功率曲線」推得。這一段全是<b>物理公式、無機器學習</b>，卻決定了整個 Y 的意義。</p>
+
+  <h3>2.1 空氣密度修正（IEC 61400-12-1）</h3>
+  <p>冬夏空氣密度差約 5%，直接影響出力。先把量測風速修正成標準密度下的等效風速：</p>
+  <div class="formula">$$ v_{\text{eff}} = U_{100}\left(\frac{\rho}{\rho_0}\right)^{1/3}, \qquad \rho_0 = 1.225\ \text{kg/m}^3 $$</div>
+  <p>其中 \(\rho\) 由現場氣溫、氣壓、濕度計算。指數 \(1/3\) 來自風功率密度 \(P \propto \rho\,U^3\)：把密度變化折算成等效風速。</p>
+
+  <h3>2.2 功率曲線（兩種機型）</h3>
+  <div class="grid2">
+    <div class="card">
+      <h4><span class="badge b-fam1">家族一</span> ~8 MW 正規化曲線</h4>
+      <p>S 形查表 + 線性內插，切入 3、額定 ~12、切出 25 m/s，輸出 <b>正規化出力 \(P\in[0,1]\)</b>（= 容量因數瞬時值）：</p>
+      <div class="formula">$$ P = \operatorname{interp}\big(v_{\text{eff}};\ \mathbf{u}_{\text{pc}},\ \mathbf{p}_{\text{pc}}\big),\quad P\in[0,1] $$</div>
+      <p style="font-size:13px;color:#5a6a7d">關鍵節點：\(u{=}3\!\to\!0.01\)，\(6\!\to\!0.20\)，\(9\!\to\!0.68\)，\(11\!\to\!0.94\)，\(12\!\to\!0.99\)，\(13\text{–}25\!\to\!1.0\)，\(>25\!\to\!0\)。</p>
+    </div>
+    <div class="card">
+      <h4><span class="badge b-fam2">家族二</span> NREL 5 MW 官方曲線</h4>
+      <p>採 NREL 5 MW 參考機組官方查表（kW），額定 5000 kW（於 11.4 m/s 達額定），輸出<b>絕對功率</b>：</p>
+      <div class="formula">$$ P_{\text{kW}} = \operatorname{interp}\big(v_{\text{eff}};\ \mathbf{u}_{\text{NREL}},\ \mathbf{p}_{\text{NREL}}\big) $$</div>
+      <p style="font-size:13px;color:#5a6a7d">切入 3.0、額定 11.4（5 MW）、切出 25 m/s；\(P_{\text{MW}} = P_{\text{kW}}/1000\)。能量 \(E=\sum P\,\Delta t\)（\(\Delta t=1/6\) h）。</p>
+    </div>
+  </div>
+
+  <h3>2.3 敏感度用簡化立方模型 & 輪轂高外推</h3>
+  <div class="grid2">
+    <div class="card">
+      <h4>簡化立方功率模型（換機型敏感度分析）</h4>
+      <div class="formula">$$ P(u)=\begin{cases}0 & u<u_{\text{in}}\\[2pt] \dfrac{u^3-u_{\text{in}}^3}{u_{\text{r}}^3-u_{\text{in}}^3} & u_{\text{in}}\le u<u_{\text{r}}\\[6pt] 1 & u_{\text{r}}\le u<u_{\text{out}}\\[2pt] 0 & u\ge u_{\text{out}}\end{cases} $$</div>
+      <p style="font-size:13px;color:#5a6a7d">\(u_{\text{in}}{=}3,\ u_{\text{out}}{=}25\)；改變額定風速 \(u_{\text{r}}\) 測 CF 對機型的敏感度。</p>
+    </div>
+    <div class="card">
+      <h4>冪次律風切外推到輪轂高</h4>
+      <div class="formula">$$ U_{\text{hub}} = U_{100}\left(\frac{h_{\text{hub}}}{100}\right)^{\alpha} $$</div>
+      <p style="font-size:13px;color:#5a6a7d">\(\alpha\) = 由多高度風速估的風切指數。塔高 100 m 假設 ≈ 輪轂高；需要時可外推到 100–150 m。</p>
+    </div>
+  </div>
+
+  <h3>2.4 站點資源評估（此物理層的直接產物）</h3>
+  <div class="kpi">
+    <div class="box"><div class="n g">45.0%</div><div class="l">全期容量因數 CF</div></div>
+    <div class="box"><div class="n">3,942–3,949</div><div class="l">等效滿載時數 h/年</div></div>
+    <div class="box"><div class="n">70.8% / 20.7%</div><div class="l">最佳月(12月)/最差月(8月) CF</div></div>
+    <div class="box"><div class="n">31%</div><div class="l">最保守機型 CF（仍屬優質）</div></div>
+  </div>
+  <div class="grid2">
+    <figure><img src="ml_project/power_forecast/figures/res2_power_curve.png" alt="功率曲線 vs 風速分布"><figcaption>功率曲線 vs 風速分布（power_forecast/res2）</figcaption></figure>
+    <figure><img src="ml_project/power_forecast/figures/res1_monthly_cf.png" alt="各月容量因數"><figcaption>各月容量因數：強季節性，冬季東北季風 CF 達 60–71%（res1）</figcaption></figure>
+  </div>
+  <div class="note"><b>誠實界線：</b>出力是物理推算、<b>非實測</b>；絕對 MW 取決於機型與尾流／可用率損失。家族一因此一律用<b>正規化 P</b> 讓結論對機型穩健；家族二用 NREL 官方曲線給出絕對量但同屬「虛擬」。風速那一段才有塔的嚴格真值。</div>
+</section>
+
+<!-- ============================ STAGE 3 ============================ -->
+<section id="s3" class="anchor">
+  <h2><span class="stepno">3</span>特徵工程</h2>
+  <p class="lead">共 <b>44 個特徵</b>（家族一）／ <b>~50 個特徵</b>（家族二，另含湍流），全部只用 \(t\) 時刻(含)以前資訊，嚴格避免時間洩漏。</p>
+
+  <h3>3.1 特徵分類</h3>
+  <div class="grid3">
+    <div class="card"><h4>當前氣象態</h4><ul class="tight"><li>100 m 與四高度風速</li><li>湍流強度 TI、陣風因子</li><li>風向 sin/cos、風向 σ</li><li>溫濕壓、空氣密度</li><li>風切指數 α、當前出力 P</li></ul></div>
+    <div class="card"><h4>時間動態</h4><ul class="tight"><li><b>滯後 lag</b>：\(t{-}10/20/30/60/120/180\) 分</li><li><b>滾動統計</b>（1h/3h/6h）：均值、標準差、min、max、<b>趨勢斜率</b></li><li><b>變化率 diff</b>：近 1h、3h 風速差分</li></ul></div>
+    <div class="card"><h4>週期編碼</h4><ul class="tight"><li>小時 sin/cos（日夜）</li><li>年內日 sin/cos（季節）</li></ul>
+      <div class="formula" style="padding:2px 10px;font-size:13px">$$\sin\!\frac{2\pi h}{24},\ \cos\!\frac{2\pi h}{24}$$</div></div>
+  </div>
+
+  <h3>3.2 無洩漏目標與連續性遮罩</h3>
+  <p>目標由未來值 <code>shift(-H)</code> 取得，並用連續性遮罩 \(m_h\) 確保 \(t\ldots t{+}H\) 全段時間連續（跨資料斷點的錯位目標設為 NaN 剔除）：</p>
+  <div class="formula">$$ y_h(t) = P(t+H), \qquad m_h(t)=\mathbb{1}\big[\text{ts}(t+H)-\text{ts}(t)=H\big] $$</div>
+  <p>區間／能量任務的目標則是窗口的平均或累積：</p>
+  <div class="formula">$$ \bar P_{[t,t+H]}=\frac1H\sum_{k=1}^{H}P(t{+}k),\qquad E_{[t,t+H]}=\sum_{k=1}^{H}P(t{+}k)\,\Delta t $$</div>
+
+  <div class="grid2">
+    <figure><img src="PW/figures/fig2_importance.png" alt="PW 特徵重要度"><figcaption>特徵重要度（PW/fig2）：風速滾動均值與近端滯後主導；季節、風切/密度為次要修正</figcaption></figure>
+    <figure><img src="ml_project/power_forecast/figures/fc5_importance.png" alt="power_forecast 特徵重要度"><figcaption>發電預測特徵重要度（power_forecast/fc5）：近時歷史（自我相關）＞風速趨勢＞風向</figcaption></figure>
+  </div>
+</section>
+
+<!-- ============================ STAGE 4 ============================ -->
+<section id="s4" class="anchor">
+  <h2><span class="stepno">4</span>預測方法</h2>
+  <p class="lead">四類任務，逐級加深：<b>點預測 → 窗口能量 → 機率區間 → 多步軌跡</b>。以下給出每一種的核心公式。</p>
+
+  <h3>4.1 基準線與點模型</h3>
+  <div class="grid2">
+    <div class="card"><h4>基準線</h4>
+      <ul class="tight">
+        <li><b>Persistence</b>：\(\hat y=P(t)\)（超短期最強樸素基準）</li>
+        <li><b>對稱 Persistence</b>（窗口任務）：以「過去 H 小時滾動均值」預測「未來 H 小時均值」</li>
+        <li><b>Climatology</b>：月 × 時的歷史平均（只靠季節/日夜）</li>
+      </ul>
+    </div>
+    <div class="card"><h4>學習型點模型</h4>
+      <ul class="tight">
+        <li><b>Ridge</b>：標準化 + L2 線性</li>
+        <li><b>XGBoost</b> / <b>LightGBM</b>：梯度提升樹，early stopping</li>
+        <li><b>結論</b>：LightGBM 在所有目標與時程全面最佳（功率曲線本身高度非線性，樹模型能吃下非線性與交互）</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>4.2 機率預測：分位數迴歸 + 保形校正（CQR）</h3>
+  <p><b>分位數迴歸</b>：對每個時程各訓練多條 LightGBM 分位數（p05…p95），最小化 pinball loss：</p>
+  <div class="formula">$$ L_\tau(y,\hat y)=\begin{cases}\tau\,(y-\hat y) & y\ge \hat y\\ (\tau-1)(y-\hat y) & y< \hat y\end{cases} $$</div>
+  <p><b>單調化</b>：逐列排序消除分位數交叉。<b>CQR 保形校正</b>：用獨立校正集（2019）算「不符合分數」，讓測試涵蓋率貼齊名目值（可交換性下有理論保證）：</p>
+  <div class="formula">$$ E_i=\max\big(\hat q_{lo}(x_i)-y_i,\ y_i-\hat q_{hi}(x_i)\big),\quad Q=\text{Quantile}_{\lceil(1-\alpha)(n+1)\rceil/n}(E) $$</div>
+  <div class="formula">$$ \text{校正後區間}=\big[\hat q_{lo}(x)-Q,\ \hat q_{hi}(x)+Q\big] $$</div>
+
+  <h3>4.3 區間預測：Conformal Prediction（advanced_forecasting）</h3>
+  <p>點模型 + 校準殘差得對稱 90% 區間：</p>
+  <div class="formula">$$ r_i=|y_i-\hat y_i|\ (\text{校準集}),\quad \hat q=\text{Quantile}_{\lceil(1-\alpha)(n+1)\rceil/n}(r),\quad \alpha=0.10 $$</div>
+  <div class="formula">$$ \big[\,\hat y-\hat q,\ \hat y+\hat q\,\big],\qquad E_{[t,t+H]}\ \text{區間}=\Big[(\hat y-\hat q)\,H\Delta t,\ (\hat y+\hat q)\,H\Delta t\Big] $$</div>
+
+  <h3>4.4 多步軌跡：遞迴（Recursive Multi-Step）</h3>
+  <p>只訓練一個 <b>1 步（t→t+10min）</b>模型，將預測回填為下一步輸入，遞迴展開至 144 步（24h）；並與各時程<b>直接（Direct）</b>模型對照。</p>
+
+  <h3>4.5 評分公式（評估用）</h3>
+  <div class="grid2">
+    <div class="card">
+      <div class="formula" style="font-size:14px">$$\text{nRMSE}=\frac{\sqrt{\frac1n\sum(y-\hat y)^2}}{\text{正規化基準}}$$</div>
+      <div class="formula" style="font-size:14px">$$\text{Skill}=1-\frac{\text{RMSE}_{\text{model}}}{\text{RMSE}_{\text{persist}}}$$</div>
+      <div class="formula" style="font-size:14px">$$\text{PICP}=\frac1n\sum\mathbb{1}[l_i\le y_i\le u_i]$$</div>
+    </div>
+    <div class="card">
+      <div class="formula" style="font-size:13px">$$W=\begin{cases}(u-l)+\tfrac{2}{\alpha}(l-y)& y<l\\ (u-l)& l\le y\le u\\ (u-l)+\tfrac{2}{\alpha}(y-u)& y>u\end{cases}$$</div>
+      <p style="font-size:12.5px;color:#5a6a7d;margin-top:6px">Winkler 區間分數（越小越好）；CRPS 以各分位 pinball loss 平均近似；Sharpness = 平均區間寬度。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ STAGE 5 ============================ -->
+<section id="s5" class="anchor">
+  <h2><span class="stepno">5</span>建模架構與驗證</h2>
+  <div class="grid2">
+    <div class="card">
+      <h4>時序切分（嚴格不洩漏）</h4>
+      <ul class="tight">
+        <li><b>家族一</b>：訓練期 &lt; 2020-06；保留測試年 2020-06 ~ 2021-10（約 17 個月，2021-06 缺測）。</li>
+        <li><b>家族二</b>：訓練 2016–2018／驗證 2019／測試 2020–2021；conformal 另切 15% 校準集。</li>
+        <li><b>CQR 校正集</b>：獨立用 2019 年。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>驗證與超參數</h4>
+      <ul class="tight">
+        <li>訓練期內 <b>expanding-window TimeSeriesSplit</b> 前推 CV（不洩漏未來）。</li>
+        <li>LightGBM 典型：<code>lr=0.03</code>、<code>num_leaves=45</code>、<code>subsample=0.8</code>、<code>colsample=0.8</code>、<code>n_estimators=250</code>、<code>seed=42</code>。</li>
+        <li>全部固定亂數種子、可續跑、可完全重現。</li>
+      </ul>
+    </div>
+  </div>
+  <div class="good"><b>架構要點：</b>這是一條「<b>驗證 → 虛擬出力 → 特徵 → 模型選擇 → 評估</b>」的四／五段獨立管線，每個專案放在獨立資料夾、互不覆蓋。切分嚴格模擬「上線後預測未見過的未來」。</div>
+</section>
+
+<!-- ============================ STAGE 6 ============================ -->
+<section id="s6" class="anchor">
+  <h2><span class="stepno">6</span>結果與應用價值</h2>
+
+  <h3>6.1 超短期點預測（家族一，正規化 nRMSE，測試年）</h3>
+  <div class="tblwrap">
+  <table>
+    <thead><tr><th>預測標的</th><th>提前量</th><th>Persist.</th><th>Clim.</th><th>Ridge</th><th>XGBoost</th><th>LightGBM</th><th>勝 Persist.</th></tr></thead>
+    <tbody>
+      <tr><td>100 m 風速</td><td>+1h</td><td>0.149</td><td>0.479</td><td>0.141</td><td>0.138</td><td class="best">0.1355</td><td>+8.8%</td></tr>
+      <tr><td>100 m 風速</td><td>+3h</td><td>0.259</td><td>0.494</td><td>0.231</td><td>0.221</td><td class="best">0.2176</td><td>+16.1%</td></tr>
+      <tr><td>100 m 風速</td><td>+6h</td><td>0.372</td><td>0.502</td><td>0.311</td><td>0.297</td><td class="best">0.2937</td><td>+21.0%</td></tr>
+      <tr><td>正規化發電量 P</td><td>+1h</td><td>0.284</td><td>0.655</td><td>0.267</td><td>0.252</td><td class="best">0.2481</td><td>+12.7%</td></tr>
+      <tr><td>正規化發電量 P</td><td>+3h</td><td>0.456</td><td>0.665</td><td>0.396</td><td>0.366</td><td class="best">0.3611</td><td>+20.8%</td></tr>
+      <tr><td>正規化發電量 P</td><td>+6h</td><td>0.624</td><td>0.671</td><td>0.490</td><td>0.455</td><td class="best">0.4494</td><td>+27.9%</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="font-size:13.5px;color:#5a6a7d"><b>核心觀察：</b>技術得分隨時程放大（+1h 時 persistence 已很強，到 +6h 模型優勢擴大到 +21%/+28%）——正是調度最需要幫助的區間。發電量比風速難預測（功率曲線陡峭段把中風速小誤差放大）。</p>
+  <figure><img src="PW/figures/fig1_skill_by_horizon.png" alt="各時程技術得分"><figcaption>各時程模型誤差與技術得分（PW/fig1）</figcaption></figure>
+
+  <h3>6.2 窗口能量 / 區間平均預測（系統 A）</h3>
+  <p>改預測「未來窗口平均出力（≡總能量）」後，平均抹平高頻雜訊，\(R^2\) 大幅提升：</p>
+  <div class="tblwrap">
+  <table>
+    <thead><tr><th>提前量 H</th><th>區間平均 \(R^2\)</th><th>Persist. \(R^2\)</th><th>nRMSE(cap)</th><th>相對改善</th><th>p10–p90 涵蓋率</th></tr></thead>
+    <tbody>
+      <tr><td>1h</td><td class="best">0.955</td><td>—</td><td>0.0835</td><td>+27.5%</td><td>90.1%</td></tr>
+      <tr><td>3h</td><td class="best">0.914</td><td>0.881</td><td>0.1144</td><td>+39.2%</td><td>88.8%</td></tr>
+      <tr><td>6h</td><td class="best">0.867</td><td>0.760</td><td>0.1396</td><td>+44.2%</td><td>88.7%</td></tr>
+      <tr><td>24h</td><td class="best">0.712</td><td>—</td><td>0.1848</td><td>+28.4%</td><td>70.4% → CQR 81%</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="grid2">
+    <figure><img src="ml_project/power_forecast_interval_ge/figures/qiv_A_coverage.png" alt="窗口平均涵蓋率"><figcaption>p10–p90 涵蓋率（interval_ge/qiv_A）：中位數 p50 R² 幾乎完全複製點模型</figcaption></figure>
+    <figure><img src="ml_project/power_forecast_interval_ge/figures/qiv_B_example.png" alt="窗口平均區間範例"><figcaption>窗口平均出力比瞬時值平滑很多（interval_ge/qiv_B）</figcaption></figure>
+  </div>
+
+  <h3>6.3 瞬時機率區間（系統 B，CQR 校正後）</h3>
+  <div class="tblwrap">
+  <table>
+    <thead><tr><th>提前量</th><th>p50 \(R^2\)</th><th>名目 80% 涵蓋</th><th>名目 90% 涵蓋</th><th>90% 區間寬度</th><th>CRPS</th></tr></thead>
+    <tbody>
+      <tr><td>1h</td><td>0.904</td><td class="best">79.8%</td><td class="best">91.4%</td><td>29% 額定</td><td>0.046</td></tr>
+      <tr><td>3h</td><td>0.784</td><td class="best">80.2%</td><td class="best">90.5%</td><td>45% 額定</td><td>0.075</td></tr>
+      <tr><td>6h</td><td>0.652</td><td class="best">80.9%</td><td class="best">90.1%</td><td>63% 額定</td><td>0.101</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="font-size:13.5px;color:#5a6a7d">80%／90% 區間校準得非常準（名目 ±1pp 內），可直接用於備轉容量規劃。CQR 調整量極小（\(Q\approx 0\text{–}0.1\%\)）代表分位數模型本身已相當校準。</p>
+  <div class="grid2">
+    <figure><img src="ml_project/power_interval_forecast_cl/figures/iv2_coverage.png" alt="區間涵蓋率"><figcaption>區間涵蓋率（interval_cl/iv2）</figcaption></figure>
+    <figure><img src="ml_project/power_interval_forecast_cl/figures/iv3_example_bands.png" alt="範例區間帶"><figcaption>「會呼吸」的區間：轉折處變寬、穩定處收窄（interval_cl/iv3）</figcaption></figure>
+  </div>
+
+  <h3>6.4 進階方法（家族二 · NREL 5 MW · 絕對 MW）</h3>
+  <div class="tblwrap">
+  <table>
+    <thead><tr><th>時程</th><th>Interval RMSE</th><th>Quantile P50 RMSE</th><th>Recursive RMSE</th><th>Direct RMSE</th><th>Interval 涵蓋率</th></tr></thead>
+    <tbody>
+      <tr><td>10min</td><td>0.350</td><td>0.376</td><td class="best">0.339</td><td>0.350</td><td>91.6%</td></tr>
+      <tr><td>1h</td><td>0.650</td><td>0.684</td><td>0.775</td><td class="best">0.648</td><td>92.9%</td></tr>
+      <tr><td>6h</td><td>1.145</td><td>1.200</td><td>1.719</td><td class="best">1.141</td><td>92.5%</td></tr>
+      <tr><td>24h</td><td>1.600</td><td>1.674</td><td>1.996</td><td class="best">1.593</td><td>92.5%</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="font-size:13.5px;color:#5a6a7d"><b>方法比較結論：</b>短時程遞迴（Recursive）10min 最佳，但誤差累積使長時程明顯劣於 Direct；Conformal 90% 區間在四個時程涵蓋率都穩定在 91–93%（RMSE 單位為絕對 MW）。</p>
+  <div class="grid3">
+    <figure><img src="ml_project/advanced_forecasting/results/figures/quantile_fan_chart.png" alt="分位數扇形圖"><figcaption>P10/P50/P90 扇形圖</figcaption></figure>
+    <figure><img src="ml_project/advanced_forecasting/results/figures/trajectory_rmse_decay.png" alt="軌跡 RMSE 衰減"><figcaption>遞迴 vs Direct 的 RMSE 衰減</figcaption></figure>
+    <figure><img src="ml_project/advanced_forecasting/results/figures/compare_radar.png" alt="方法雷達圖"><figcaption>三方法多維雷達比較</figcaption></figure>
+  </div>
+
+  <h3>6.5 應用價值：日前結算與經濟避險</h3>
+  <div class="kpi">
+    <div class="box"><div class="n g">0.7209</div><div class="l">日前 24h 能量 \(R^2\)（PW_Interval，+28.2%）</div></div>
+    <div class="box"><div class="n g">5,545 萬</div><div class="l">100 MW 風場省下懲罰金/期（PW_Integrated，避險 27.9%）</div></div>
+    <div class="box"><div class="n g">0.8706</div><div class="l">+1h 劇烈爬升事件 ROC-AUC</div></div>
+    <div class="box"><div class="n">0.9999</div><div class="l">台電 15-min 即時轉供 \(R^2\)</div></div>
+  </div>
+  <div class="grid2">
+    <figure><img src="PW_Interval/figures/fig14_day_ahead_24h_settlement.png" alt="日前24h結算"><figcaption>日前 24h 區間總能量預測與財務避險（PW_Interval/fig14）</figcaption></figure>
+    <figure><img src="PW_Integrated/figures/fig11_ramp_event_classification.png" alt="爬升事件預警"><figcaption>風電劇烈爬升事件分類預警（PW_Integrated/fig11）</figcaption></figure>
+  </div>
+  <div class="note"><b>經濟數字的定位：</b>這些台幣金額建立在「虛擬出力 × 假設市場罰則」的試算上，用來<b>示範預測改善的量級</b>，不是實際財報。跨專案的避險比例（PW_Integrated 27.9% 對 PW_Interval 39.9%）差異來自不同的結算規則與時程假設。</div>
+</section>
+
+<!-- ============================ PER-PROJECT ============================ -->
+<section id="p-pw" class="anchor">
+  <h2>各專案結果彙整</h2>
+
+  <h3 id="p-pw2">PW / PW_Integrated / PW_Interval <span class="badge b-fam1">家族一</span></h3>
+  <div class="grid3">
+    <div class="card"><h4>PW</h4><p>最乾淨的四段管線：驗證→特徵→模型選擇→評估。雙目標（風速 + 正規化 P）、時程 +1/3/6h。附「同參數雙任務適合度」實驗（發電 R²=0.889 vs 湍流 R²=0.759）。</p></div>
+    <div class="card"><h4>PW_Integrated</h4><p>十段式最完整版：資源評估（CF 45%）、多模型點預測、機率預測、特徵消融、跨期漂移驗證、區間能量、爬升事件、台幣經濟量化。</p></div>
+    <div class="card"><h4>PW_Interval</h4><p>把單點改寫為<b>區間累積能量</b>，並擴充台電 15-min 結算與<b>日前 24h（96×15min）</b>能量預測（R²=0.72，避險 115.9 億台幣/期）。</p></div>
+  </div>
+  <div class="tblwrap">
+  <table>
+    <thead><tr><th>PW_Interval 標的</th><th>15min 區間數</th><th>最佳模型</th><th>nRMSE</th><th>\(R^2\)</th><th>相對 Persist.</th></tr></thead>
+    <tbody>
+      <tr><td>15min 即時轉供</td><td>1</td><td>LightGBM</td><td>0.0038</td><td class="best">0.9999</td><td>近乎零誤差</td></tr>
+      <tr><td>1h 電能交易</td><td>4</td><td>LightGBM</td><td>0.1181</td><td>0.9835</td><td>+11.9%</td></tr>
+      <tr><td>3h 調度預警</td><td>12</td><td>LightGBM</td><td>0.2276</td><td>0.9366</td><td>+15.0%</td></tr>
+      <tr><td>6h 超短期</td><td>24</td><td>LightGBM</td><td>0.2579</td><td>0.8741</td><td>+27.9%</td></tr>
+      <tr><td>日前 24h 總能量</td><td>96</td><td>LightGBM</td><td>0.4163</td><td>0.7209</td><td>+28.2%</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3 id="p-root">power_forecast（根）<span class="badge b-fam1">家族一</span></h3>
+  <p>資源評估 + 超短期預測的原型；<b>直接信 <code>is_valid</code></b>（不重跑 QC）。含 30min–6h 更細時程的技術得分曲線與分季節評估、分位數 p10/p50/p90。是 <code>interval_cl</code> 的資料管線來源。</p>
+  <div class="grid2">
+    <figure><img src="ml_project/power_forecast/figures/fc1_skill_curve.png" alt="技術得分曲線"><figcaption>技術得分曲線 30min→6h（power_forecast/fc1）</figcaption></figure>
+    <figure><img src="ml_project/power_forecast/figures/res5_energy_rose.png" alt="能量風花圖"><figcaption>能量風花圖：發電高度集中東北扇區（res5）</figcaption></figure>
+  </div>
+
+  <h3 id="p-ge">power_forecast_interval_ge（系統 A）<span class="badge b-fam1">家族一</span></h3>
+  <p>窗口平均（總能量）預測，並<b>新增 p10/p50/p90 機率區間</b>，擴充到 24h。中位數 p50 R² 幾乎完全複製點模型（0.955→0.953），證明分位數模型與點模型一致可信。</p>
+
+  <h3 id="p-cl">power_interval_forecast_cl（系統 B）<span class="badge b-fam1">家族一</span></h3>
+  <p>瞬時不確定性區間：21 個分位數模型（7 分位 × 3 時程）+ CQR 保形校正 + 完整機率評分（涵蓋率/寬度/pinball/CRPS/Winkler/可靠度圖）。<b>沿用根專案的資料管線</b>，可與點預測直接對照。</p>
+
+  <h3 id="p-adv">advanced_forecasting <span class="badge b-fam2">家族二</span></h3>
+  <p>唯一用 <b>NREL 5 MW 官方曲線 + 絕對 MW</b> 且併入 <code>BSMI_turb</code> 的專案。三種進階方法一次到位：Conformal Interval、Quantile、Recursive Trajectory（至 144 步 / 24h）。</p>
+  <div class="tblwrap">
+  <table>
+    <thead><tr><th>時程</th><th>Interval R²</th><th>涵蓋率</th><th>Winkler</th><th>Quantile CRPS</th><th>Trajectory R²(遞迴)</th></tr></thead>
+    <tbody>
+      <tr><td>10min</td><td class="best">0.972</td><td>91.6%</td><td>1.519</td><td>0.074</td><td>0.975</td></tr>
+      <tr><td>1h</td><td>0.904</td><td>92.9%</td><td>2.815</td><td>0.113</td><td>0.864</td></tr>
+      <tr><td>6h</td><td>0.705</td><td>92.5%</td><td>4.425</td><td>0.210</td><td>0.317</td></tr>
+      <tr><td>24h</td><td>0.421</td><td>92.5%</td><td>5.078</td><td>0.343</td><td>0.101</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3 id="p-turb">湍流降尺度（消融 + 正式訓練）<span class="badge b-fam2">家族二資料</span></h3>
+  <p>不同層次的問題：不預測「未來出力」，而是預測「當前 10 分鐘的<b>湍流強度 TI = σ/U</b>」（關乎風機疲勞載重）。60 個消融實驗的關鍵結論：</p>
+  <ul class="tight">
+    <li><b>最值得預測的方向是 TI</b>（正規化目標）——只用風速 R²≈0.14，加完整特徵跳到 0.755，機器學習加值最大（+0.66）。</li>
+    <li><b>TI 幾乎完全由風向決定</b>：最終 8 特徵模型中，四個風向分量佔重要性 <b>90%</b>（單 <code>WD_97_cos</code> 就 57%）。物理上：不同風向的上風地表粗糙度差異巨大。</li>
+    <li><b>用 8 特徵打敗 17 特徵</b>：熱力與 <code>veer_97_35</code> 特徵被證實有害，精簡 <code>core8</code> 測試 R²=0.781（雙感測器天花板 0.99）。</li>
+  </ul>
+  <figure><img src="ml_project/advanced_forecasting/results/figures/compare_uncertainty.png" alt="不確定性比較"><figcaption>三種進階方法的不確定性量化比較（advanced_forecasting/compare_uncertainty）</figcaption></figure>
+</section>
+
+<!-- ============================ LIMITS ============================ -->
+<section id="limits" class="anchor">
+  <h2>誠實限制（七專案共通）</h2>
+  <div class="grid2">
+    <div class="card">
+      <ol class="tight">
+        <li><b>虛擬出力非實測</b>：由功率曲線推算，尾流／可用率／機型皆為假設。可用台電公開容量因數校準損失。</li>
+        <li><b>理想切出風速</b>：曲線在 25 m/s 硬切，實際風機有遲滯，故極端強風的 0↔1 彈跳在真實中較平緩。</li>
+      </ol>
+    </div>
+    <div class="card">
+      <ol class="tight" start="3">
+        <li><b>短時程機率區間略保守</b>；零/額定的「點質量」讓低分位較難校準（80%/90% 不受影響）。</li>
+        <li><b>逐時日前仍需 NWP</b>：塔只有「過去到現在」，超過 ~6h persistence 逼近長期平均而失效；日前 48h 需接 CWA/ERA5 數值天氣預報做偏差校正。</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ SUMMARY ============================ -->
+<section id="summary" class="anchor">
+  <h2>一頁總結</h2>
+  <div class="good" style="font-size:15px">
+    一座 BSMI 測風塔 + 一條物理功率曲線 = 一座「虛擬風場」。以嚴謹的六階段管線（<b>QC → 虛擬出力 → 特徵 → 方法 → 驗證 → 結果</b>）：
+    <ul class="tight">
+      <li>這是個<b>容量因數 45%</b> 的優質離岸站點；</li>
+      <li>LightGBM 在 0–6h <b>全面打敗 persistence</b>（+8% 至 +28%，時程越長優勢越大）；</li>
+      <li>改預測<b>窗口能量</b>後 3h R² 由 ~0.79 跳到 0.91；日前 24h 能量 R²=0.72；</li>
+      <li><b>機率區間</b>（CQR）在 80%/90% 校準到名目 ±1pp，可直接用於備轉容量規劃；</li>
+      <li><b>advanced_forecasting</b> 用 NREL 5 MW 絕對量示範 Conformal/Quantile/Trajectory 三法；</li>
+      <li>湍流降尺度證明 <b>TI 幾乎完全由風向決定</b>（8 特徵 R²=0.78）。</li>
+    </ul>
+    要再往日前 48 小時，才需要接氣象署的數值預報——那是測風塔的物理極限之外。
+  </div>
+</section>
+
+<footer>
+  <p>資料來源：BSMI 100 m 測風塔（2016-03 ~ 2021-10）。所有結果為固定亂數種子下的可重現輸出。本頁彙整自各專案 <code>REPORT*.md</code> 與原始碼（<code>virtual_power.py</code>、<code>common.py</code>、<code>*_forecast.py</code>）。</p>
+  <p>圖表以相對路徑引用各專案 <code>figures/</code>；請將本檔置於 <code>D:\ML_wind\</code> 根目錄開啟以正確顯示圖片。公式由 MathJax 渲染（需網路）。</p>
+</footer>
+
+</main>
+</div>
+</body>
+</html>

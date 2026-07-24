@@ -1,0 +1,7 @@
+tag,target,H,model,RMSE,MAE,nRMSE,skill_vs_persist
+power_H1,power,1,lightgbm,0.12894,0.07779,0.24828,0.12604
+power_H3,power,3,lightgbm,0.1866,0.12486,0.36224,0.2059
+power_H6,power,6,lightgbm,0.22958,0.16361,0.45084,0.27745
+ws100_H1,ws100,1,lightgbm,1.31833,0.97677,0.13609,0.08331
+ws100_H3,ws100,3,lightgbm,2.08734,1.55675,0.21778,0.16053
+ws100_H6,ws100,6,lightgbm,2.78884,2.05254,0.29367,0.21042

@@ -1,0 +1,9 @@
+tag,target,H,model,fold,nRMSE
+power_H3,power,3,ridge,0,0.43412624837095903
+power_H3,power,3,ridge,1,0.44227406399950475
+power_H3,power,3,ridge,2,0.3697956814483293
+power_H3,power,3,ridge,3,0.3919937761949156
+power_H3,power,3,lightgbm,0,0.42873158703045866
+power_H3,power,3,lightgbm,1,0.4226757915370838
+power_H3,power,3,lightgbm,2,0.3581567653937812
+power_H3,power,3,lightgbm,3,0.3649574941361233
